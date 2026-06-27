@@ -1,93 +1,221 @@
-# stableops-wallet-ui
+# StableOps Wallet UI
 
+[![npm version](https://img.shields.io/npm/v/@stableops/wallet-ui)](https://www.npmjs.com/package/@stableops/wallet-ui) [![npm downloads](https://img.shields.io/npm/dm/@stableops/wallet-ui)](https://www.npmjs.com/package/@stableops/wallet-ui) [![License](https://img.shields.io/npm/l/@stableops/wallet-ui)](./LICENSE) [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org)
 
+[中文文档](./README.zh-CN.md)
 
-## Getting started
+StableOps Wallet UI provides the shared React UI components used by StableOps
+checkout surfaces: a WalletConnect payment dialog, wallet logos, and a wallet
+icon renderer. These components are shared between the main checkout flow
+(`apps/checkout`) and the interactive playground (`packages/playground`) so that
+both surfaces render identical wallet selection and QR-code payment experiences.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+This package is intended for applications that already integrate
+`@stableops/wallet-sdk` and need a ready-made responsive dialog for WalletConnect
+flows. It ships no wallet connection logic — that is handled by the SDK.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Documentation
 
-## Add your files
+For complete guides, API references, and wallet integration examples, see the
+official documentation:
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+- English docs: https://stableops.dev/en/docs
+- Chinese docs: https://stableops.dev/zh/docs
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/StableOps/stableops-wallet-ui.git
-git branch -M main
-git push -uf origin main
-```
+## Features
 
-## Integrate with your tools
+- Responsive WalletConnect payment dialog (bottom sheet on mobile, centered modal
+  on desktop) with wallet picker and QR-code scan page.
+- Built-in wallet logo data URIs for MetaMask, Trust Wallet, Coinbase, Rainbow,
+  OKX, Binance, Zerion, Ledger, WalletConnect, TronLink, and TokenPocket.
+- Fallback wallet icon rendering by brand color and inline SVG glyph.
+- Configurable copy via a typed `WalletConnectDialogCopy` contract (compatible
+  with typesafe-i18n or similar i18n libraries).
+- Self-contained; no StableOps workspace dependencies at runtime.
+- Dual CJS and ESM builds with generated TypeScript declarations.
 
-* [Set up project integrations](https://gitlab.com/StableOps/stableops-wallet-ui/-/settings/integrations)
+## Requirements
 
-## Collaborate with your team
-
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- A modern browser environment.
+- React 19 or compatible version.
+- A `@stableops/wallet-sdk` controller instance for connection management.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+```bash
+pnpm add @stableops/wallet-ui
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```bash
+npm install @stableops/wallet-ui
+```
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+```bash
+yarn add @stableops/wallet-ui
+```
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+## Quick Start
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Wire the dialog into your checkout page and pass the WalletConnect controller
+state from `@stableops/wallet-sdk`.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+```tsx
+import { useState } from 'react'
+import { WalletConnectDialog } from '@stableops/wallet-ui'
+import { createWalletConnectController } from '@stableops/wallet-sdk'
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+function CheckoutPage() {
+  const [open, setOpen] = useState(false)
+  const [wc, setWc] = useState<WalletConnectControllerState | null>(null)
+
+  // Create the controller on user interaction (not on mount).
+  const handlePayWithWallet = async () => {
+    const controller = await createWalletConnectController({ /* … */ })
+    setWc(controller)
+    setOpen(true)
+    controller.subscribe((state) => setWc(state))
+  }
+
+  return (
+    <>
+      <button onClick={handlePayWithWallet}>Pay with WalletConnect</button>
+      <WalletConnectDialog
+        open={open}
+        copy={/* Your i18n labels wrapped as WalletConnectDialogCopy */}
+        projectId="YOUR_REOWN_PROJECT_ID"
+        available={true}
+        wallets={/* Your wallet option list */}
+        selectedWallet={wc?.selectedWallet ?? null}
+        state={wc ?? { status: 'idle' }}
+        qrCode={wc?.qrCode ?? null}
+        error={null}
+        onSelectWallet={(wallet) => wc?.selectWallet(wallet.id)}
+        onBack={() => wc?.back()}
+        onClose={() => { setOpen(false); wc?.disconnect() }}
+      />
+    </>
+  )
+}
+```
+
+For a complete integration example, see `apps/checkout` or `packages/playground`.
+
+## Exports
+
+| Export | Description |
+|---|---|
+| `WalletConnectDialog` | Full responsive dialog with wallet picker and QR-code page |
+| `WalletConnectDialogCopy` | Type contract for localised copy strings |
+| `WALLET_LOGOS` | Map of wallet id → base64 inline data URI (PNG / WebP) |
+| `WalletIcon` | React component that renders a wallet logo or fallback brand glyph |
+
+### `WalletConnectDialog`
+
+A responsive modal component that implements the two-step flow:
+
+1. **Wallet picker** — shows available wallets in a 3-column grid.
+2. **QR code page** — displays the WalletConnect URI as a QR code with an
+   overlay wallet logo, and offers an "Open Wallet" deep-link button and a
+   "Copy URI" button.
+
+On small screens the dialog renders as a bottom sheet; on `sm:` breakpoint and
+above it centers as a rounded modal. Animations are handled by inline CSS
+keyframes (no external animation library required).
+
+**Props** (see the TypeScript declaration for the full list):
+
+```ts
+type WalletConnectDialogProps = {
+  open: boolean
+  copy: WalletConnectDialogCopy
+  projectId: string | undefined
+  available: boolean
+  wallets: WalletOption[]
+  selectedWallet: WalletOption | null
+  state: WalletConnectControllerState
+  qrCode: string | null
+  error: string | null
+  themeColor?: string
+  walletLinkMode?: boolean
+  copied: boolean
+  onSelectWallet: (wallet: WalletOption) => void
+  onBack: () => void
+  onClose: () => void
+  onCopyUri: (uri: string) => void
+}
+```
+
+### `WalletConnectDialogCopy`
+
+A plain-object contract that the dialog calls for every user-facing string.
+Adapt your i18n library to this shape:
+
+```ts
+type WalletConnectDialogCopy = {
+  heading: string
+  back: string
+  close: string
+  qrAlt: string
+  payWith: (wallet: string) => string
+  scanWithWallet: (wallet: string) => string
+  scanAnyWallet: string
+  openWallet: (wallet: string) => string
+  copyUri: string
+  copied: string
+  or: string
+  connectFailed: string
+}
+```
+
+### `WALLET_LOGOS`
+
+```ts
+const WALLET_LOGOS: Record<string, string>
+```
+
+A map of wallet identifiers to inline base64-encoded data URIs. Supported ids:
+
+`metamask`, `trust`, `coinbase`, `rainbow`, `okx`, `binance`, `zerion`,
+`ledger`, `walletconnect`, `tronlink`, `tokenpocket`
+
+### `WalletIcon`
+
+```ts
+function WalletIcon({ wallet }: { wallet: { name: string; iconUrl?: string; brand?: string; Glyph?: () => ReactNode } }): ReactNode
+```
+
+Renders a 48×48 rounded icon. If `iconUrl` is provided it displays the image;
+otherwise it falls back to the `brand` background color with an optional inline
+SVG glyph.
+
+## Copy Adaptation
+
+The dialog does not import any i18n runtime. To use it with a different i18n
+library, create an adapter function that maps your library's translation
+function to the `WalletConnectDialogCopy` contract:
+
+```ts
+import { LL } from './i18n/i18n-util'
+
+function toCopy(locale: string): WalletConnectDialogCopy {
+  const ll = LL[locale]
+  return {
+    heading: ll.walletConnect.heading(),
+    back: ll.walletConnect.back(),
+    // …
+  }
+}
+```
+
+## Development
+
+This package is part of the StableOps monorepo. Build and test with:
+
+```bash
+pnpm --filter @stableops/wallet-ui build
+pnpm --filter @stableops/wallet-ui test
+```
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This package is licensed under `Apache-2.0`. See [LICENSE](./LICENSE).
