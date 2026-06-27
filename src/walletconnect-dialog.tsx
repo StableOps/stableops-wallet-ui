@@ -1,0 +1,260 @@
+import { type CSSProperties, type ReactNode } from 'react'
+
+import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
+import { ArrowLeft, Check, Copy, ExternalLink, Loader2, X } from 'lucide-react'
+
+import { WalletIcon, type WalletIconWallet } from './wallet-icon'
+import './walletconnect-dialog.css'
+
+const PLACEHOLDER_QR_CODE =
+  'data:image/png;base64,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'
+
+type WalletConnectThemeStyle = CSSProperties & {
+  '--stableops-wc-brand'?: string
+}
+
+export type WalletConnectDialogWallet = WalletIconWallet & {
+  id: string
+  links?: {
+    native?: string
+    universal?: string
+  }
+}
+
+export type WalletConnectDialogCopy = {
+  heading: string
+  back: string
+  close: string
+  qrAlt: string
+  payWith: (wallet: string) => string
+  scanWithWallet: (wallet: string) => string
+  scanAnyWallet: string
+  openWallet: (wallet: string) => string
+  copyUri: string
+  copied: string
+  or: string
+  connectFailed: string
+}
+
+export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> = {
+  open: boolean
+  copy: WalletConnectDialogCopy
+  projectId: string | null | undefined
+  available: boolean
+  wallets: readonly TWallet[]
+  selectedWallet: TWallet | null
+  state: WalletConnectControllerState
+  qrCode: string | null
+  error: string | null
+  walletLinkMode?: boolean
+  themeColor?: string
+  copied: boolean
+  renderWalletIcon?: (wallet: TWallet) => ReactNode
+  onSelectWallet: (wallet: TWallet) => void
+  onBack: () => void
+  onClose: () => void
+  onCopyUri: (uri: string) => void
+}
+
+export const walletConnectDialogClassNames = {
+  backdrop: 'stableops-wc-backdrop',
+  sheet: 'stableops-wc-sheet',
+  qrFrame: 'stableops-wc-qr-frame',
+} as const
+
+export function walletLink(prefix: string, uri: string): string {
+  return `${prefix}${encodeURIComponent(uri)}`
+}
+
+export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
+  open,
+  copy,
+  projectId,
+  available,
+  wallets,
+  selectedWallet,
+  state,
+  qrCode,
+  error,
+  walletLinkMode = false,
+  themeColor,
+  copied,
+  renderWalletIcon,
+  onSelectWallet,
+  onBack,
+  onClose,
+  onCopyUri,
+}: WalletConnectDialogProps<TWallet>): ReactNode {
+  if (!open) return null
+
+  const appLink = selectedWallet?.links?.native ?? selectedWallet?.links?.universal ?? null
+  const appLinkIsUniversal =
+    !selectedWallet?.links?.native && Boolean(selectedWallet?.links?.universal)
+  const readyUri = state.status === 'uri_ready' ? state.uri : null
+  const walletHref =
+    walletLinkMode && readyUri
+      ? readyUri
+      : appLink && readyUri
+        ? walletLink(appLink, readyUri)
+        : undefined
+  const qrLoading =
+    selectedWallet && !qrCode && (state.status === 'connecting' || state.status === 'uri_ready')
+  const disabledList = (!walletLinkMode && !projectId) || !available
+  const renderIcon = renderWalletIcon ?? ((wallet: TWallet) => <WalletIcon wallet={wallet} />)
+  const themeStyle: WalletConnectThemeStyle | undefined = themeColor
+    ? { '--stableops-wc-brand': themeColor }
+    : undefined
+
+  return (
+    <div className={walletConnectDialogClassNames.backdrop} style={themeStyle} onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={walletConnectDialogClassNames.sheet}
+        onClick={(event) => event.stopPropagation()}>
+        <div className="stableops-wc-header">
+          {selectedWallet ? (
+            <>
+              <button
+                type="button"
+                aria-label={copy.back}
+                onClick={onBack}
+                className="stableops-wc-icon-button stableops-wc-back-button">
+                <ArrowLeft className="stableops-wc-icon" />
+              </button>
+              <div className="stableops-wc-title">{copy.payWith(selectedWallet.name)}</div>
+            </>
+          ) : (
+            <div className="stableops-wc-title">{copy.heading}</div>
+          )}
+          <button
+            type="button"
+            aria-label={copy.close}
+            onClick={onClose}
+            className="stableops-wc-icon-button stableops-wc-close-button">
+            <X className="stableops-wc-icon" />
+          </button>
+        </div>
+
+        {selectedWallet ? (
+          <div className="stableops-wc-body">
+            <div className={walletConnectDialogClassNames.qrFrame}>
+              {qrCode ? (
+                <>
+                  <img src={qrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
+                  <div className="stableops-wc-centered-overlay">
+                    <div className="stableops-wc-wallet-chip">
+                      {renderIcon(selectedWallet)}
+                    </div>
+                  </div>
+                </>
+              ) : qrLoading ? (
+                <>
+                  <img
+                    src={PLACEHOLDER_QR_CODE}
+                    alt=""
+                    className="stableops-wc-qr-image stableops-wc-qr-placeholder"
+                    aria-hidden="true"
+                  />
+                  <div className="stableops-wc-centered-overlay">
+                    <div className="stableops-wc-wallet-chip">
+                      {renderIcon(selectedWallet)}
+                    </div>
+                  </div>
+                  <div className="stableops-wc-loading-overlay">
+                    <Loader2 className="stableops-wc-spinner stableops-wc-muted-spinner" />
+                  </div>
+                </>
+              ) : (
+                <div className="stableops-wc-empty-qr">
+                  {state.status === 'failed' ? (
+                    <span className="stableops-wc-error-text">{copy.connectFailed}</span>
+                  ) : (
+                    <Loader2 className="stableops-wc-spinner" />
+                  )}
+                </div>
+              )}
+            </div>
+
+            <p className="stableops-wc-help-text">
+              {walletLinkMode || selectedWallet.links
+                ? copy.scanWithWallet(selectedWallet.name)
+                : copy.scanAnyWallet}
+            </p>
+
+            {walletLinkMode || appLink ? (
+              <div className="stableops-wc-separator">
+                <div className="stableops-wc-line" />
+                <span>{copy.or}</span>
+                <div className="stableops-wc-line" />
+              </div>
+            ) : (
+              <div className="stableops-wc-spacer" />
+            )}
+
+            <div className="stableops-wc-actions">
+              {walletLinkMode || appLink ? (
+                <a
+                  className={`stableops-wc-primary-action ${
+                    walletHref ? '' : 'stableops-wc-disabled-link'
+                  }`}
+                  aria-disabled={walletHref ? false : true}
+                  href={walletHref}
+                  {...((walletLinkMode || appLinkIsUniversal) && walletHref
+                    ? { target: '_blank', rel: 'noreferrer' }
+                    : {})}>
+                  <ExternalLink className="stableops-wc-action-icon" />
+                  {copy.openWallet(selectedWallet.name)}
+                </a>
+              ) : null}
+              <button
+                type="button"
+                disabled={!readyUri}
+                onClick={() => {
+                  if (readyUri) onCopyUri(readyUri)
+                }}
+                className={`stableops-wc-secondary-action ${
+                  copied ? 'stableops-wc-copy-done' : ''
+                }`}>
+                {copied ? (
+                  <>
+                    <Check
+                      className="stableops-wc-action-icon stableops-wc-check-icon"
+                      strokeWidth={3}
+                    />
+                    {copy.copied}
+                  </>
+                ) : (
+                  <>
+                    <Copy className="stableops-wc-action-icon" />
+                    {copy.copyUri}
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="stableops-wc-wallet-grid">
+            {wallets.map((wallet) => (
+              <button
+                key={wallet.id}
+                type="button"
+                className="stableops-wc-wallet-button"
+                disabled={disabledList}
+                onClick={() => onSelectWallet(wallet)}>
+                {renderIcon(wallet)}
+                <span>{wallet.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {error || state.status === 'failed' ? (
+          <div className="stableops-wc-error-box">
+            {error || (state.status === 'failed' ? state.error.message : undefined)}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  )
+}
