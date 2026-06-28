@@ -201,7 +201,17 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                 <>
                   <img src={visibleQrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
                   <div className="stableops-wc-centered-overlay">
-                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                    <div
+                      className={`stableops-wc-wallet-chip${
+                        paymentReady ? ' stableops-wc-wallet-chip-connected' : ''
+                      }`}>
+                      {renderIcon(selectedWallet)}
+                      {paymentReady ? (
+                        <span className="stableops-wc-connected-badge" aria-hidden="true">
+                          <Check className="stableops-wc-connected-badge-icon" strokeWidth={3} />
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                 </>
               ) : qrLoading ? (
@@ -213,7 +223,17 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     aria-hidden="true"
                   />
                   <div className="stableops-wc-centered-overlay">
-                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                    <div
+                      className={`stableops-wc-wallet-chip${
+                        paymentReady ? ' stableops-wc-wallet-chip-connected' : ''
+                      }`}>
+                      {renderIcon(selectedWallet)}
+                      {paymentReady ? (
+                        <span className="stableops-wc-connected-badge" aria-hidden="true">
+                          <Check className="stableops-wc-connected-badge-icon" strokeWidth={3} />
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                   <div className="stableops-wc-loading-overlay">
                     <Loader2 className="stableops-wc-spinner stableops-wc-muted-spinner" />
@@ -239,7 +259,17 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                         {copy.refreshConnection}
                       </button>
                     ) : (
-                      <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                      <div
+                        className={`stableops-wc-wallet-chip${
+                          paymentReady ? ' stableops-wc-wallet-chip-connected' : ''
+                        }`}>
+                        {renderIcon(selectedWallet)}
+                        {paymentReady ? (
+                          <span className="stableops-wc-connected-badge" aria-hidden="true">
+                            <Check className="stableops-wc-connected-badge-icon" strokeWidth={3} />
+                          </span>
+                        ) : null}
+                      </div>
                     )}
                   </div>
                   {state.status === 'failed' && !showRefreshControl ? (

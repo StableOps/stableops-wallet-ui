@@ -23,6 +23,8 @@
     var(--stableops-wc-danger) 8%,
     var(--stableops-wc-surface)
   );
+  /* 连接成功的绿色提示色：宿主未注入则用 emerald-600。 */
+  --stableops-wc-success: var(--success, #059669);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -41,6 +43,7 @@
     --stableops-wc-copy-done-bg: var(--accent, oklch(0.274 0.006 286.033));
     --stableops-wc-danger: var(--destructive, oklch(0.704 0.191 22.216));
     --stableops-wc-danger-text: var(--destructive-foreground, oklch(0.985 0 0));
+    --stableops-wc-success: var(--success, #34d399);
   }
 }
 
@@ -282,6 +285,7 @@
 }
 
 .stableops-wc-wallet-chip {
+  position: relative;
   border-radius: 0.75rem;
   padding: 0.25rem;
   background: #ffffff;
@@ -289,6 +293,35 @@
     0 4px 6px -1px rgb(0 0 0 / 10%),
     0 2px 4px -2px rgb(0 0 0 / 10%);
   outline: 1px solid rgb(0 0 0 / 5%);
+}
+
+/* 已连接：图标外圈绿色描边 + 柔光，配合右下角对勾徽标提示连接成功。 */
+.stableops-wc-wallet-chip-connected {
+  outline: 2px solid var(--stableops-wc-success);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--stableops-wc-success) 18%, transparent),
+    0 4px 6px -1px rgb(0 0 0 / 10%);
+}
+
+.stableops-wc-connected-badge {
+  position: absolute;
+  right: -0.3rem;
+  bottom: -0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 9999px;
+  background: var(--stableops-wc-success);
+  color: #ffffff;
+  /* 白环把徽标从二维码背景中托起；QR frame 背景恒为白色，明暗主题都成立。 */
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.stableops-wc-connected-badge-icon {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .stableops-wc-refresh-button {
@@ -529,12 +562,8 @@
 
 .stableops-wc-error-box {
   margin: 0 1.25rem 1.25rem;
-  border: 1px solid var(--stableops-wc-danger-border);
-  border-radius: 0.5rem;
-  background: var(--stableops-wc-danger-bg);
-  padding: 0.625rem;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   line-height: 1.4;
   color: var(--stableops-wc-danger);
 }
