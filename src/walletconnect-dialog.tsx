@@ -4,6 +4,7 @@ import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
 import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, RotateCw, X } from 'lucide-react'
 
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
+import { createWalletConnectDialogCopy, type WalletConnectLocale } from './walletconnect-dialog-copy'
 import './walletconnect-dialog.css'
 
 const PLACEHOLDER_QR_CODE =
@@ -50,7 +51,8 @@ export type WalletConnectDialogError =
 
 export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> = {
   open: boolean
-  copy: WalletConnectDialogCopy
+  copy?: WalletConnectDialogCopy
+  locale?: WalletConnectLocale
   projectId: string | null | undefined
   available: boolean
   wallets: readonly TWallet[]
@@ -93,7 +95,8 @@ function formatWalletConnectDialogError(
 
 export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   open,
-  copy,
+  copy: copyProp,
+  locale = 'en',
   projectId,
   available,
   wallets,
@@ -115,6 +118,8 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   onCopyUri,
 }: WalletConnectDialogProps<TWallet>): ReactNode {
   if (!open) return null
+
+  const copy = copyProp ?? createWalletConnectDialogCopy(locale)
 
   const appLink = selectedWallet?.links?.native ?? selectedWallet?.links?.universal ?? null
   const appLinkIsUniversal =
