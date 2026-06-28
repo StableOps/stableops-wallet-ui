@@ -51,6 +51,17 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
     expect(css).toContain('max-width: 100%')
   })
 
+  it('can render inside a shadow root with its own dialog stylesheet', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
+
+    expect(source).toContain("import { createPortal } from 'react-dom'")
+    expect(source).toContain('WALLETCONNECT_DIALOG_CSS')
+    expect(source).toContain('useShadowRoot?: boolean')
+    expect(source).toContain("host.attachShadow({ mode: 'open' })")
+    expect(source).toContain('<style>{WALLETCONNECT_DIALOG_CSS}</style>')
+    expect(source).toContain('createPortal')
+  })
+
   it('uses controlled copy state supplied by the host app', () => {
     const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
 
@@ -77,12 +88,36 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
     const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
 
     expect(source).toContain('CircleAlert')
-    expect(source).toContain("state.status === 'failed' ? (")
+    expect(source).toContain("state.status === 'failed' && !showRefreshControl ? (")
     expect(source).toContain('stableops-wc-error-icon')
     expect(source).toContain('const visibleError =')
     expect(source).not.toContain('stableops-wc-error-text')
     expect(source).not.toContain('{copy.connectFailed}</span>')
     expect(css).toContain('.stableops-wc-error-icon')
+  })
+
+  it('can show a manual refresh button in the QR center after recoverable connection failures', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(source).toContain('RotateCw')
+    expect(source).toContain('refreshConnection: string')
+    expect(source).toContain('connectionRefreshAvailable?: boolean')
+    expect(source).toContain('onRefreshConnection?: () => void')
+    expect(source).toContain('stableops-wc-refresh-button')
+    expect(source).toContain('onRefreshConnection()')
+    expect(css).toContain('.stableops-wc-refresh-button')
+  })
+
+  it('keeps the QR center wallet logo smaller than wallet list icons for scan reliability', () => {
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(css).toContain('.stableops-wc-wallet-chip .stableops-wc-wallet-logo')
+    expect(css).toContain('.stableops-wc-wallet-chip .stableops-wc-wallet-fallback')
+    expect(css).toContain('width: 2.25rem')
+    expect(css).toContain('height: 2.25rem')
+    expect(css).toContain('width: 3rem')
+    expect(css).toContain('height: 3rem')
   })
 
   it('formats known error codes with host i18n and keeps unknown details visible', () => {

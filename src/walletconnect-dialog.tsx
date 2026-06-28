@@ -1,8 +1,10 @@
-import { type CSSProperties, type ReactNode } from 'react'
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
-import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, X } from 'lucide-react'
+import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, RotateCw, X } from 'lucide-react'
 
+import { WALLETCONNECT_DIALOG_CSS } from './walletconnect-dialog-css'
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
 import './walletconnect-dialog.css'
 
@@ -37,6 +39,7 @@ export type WalletConnectDialogCopy = {
   copied: string
   or: string
   connectFailed: string
+  refreshConnection: string
   errorMessage: (code: string) => string | null
 }
 
@@ -58,12 +61,15 @@ export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> 
   qrCode: string | null
   error: WalletConnectDialogError | null
   walletLinkMode?: boolean
+  useShadowRoot?: boolean
   themeColor?: string
   copied: boolean
   paymentPending?: boolean
+  connectionRefreshAvailable?: boolean
   renderWalletIcon?: (wallet: TWallet) => ReactNode
   onSelectWallet: (wallet: TWallet) => void
   onRetryPayment?: () => void
+  onRefreshConnection?: () => void
   onBack: () => void
   onClose: () => void
   onCopyUri: (uri: string) => void
@@ -89,6 +95,41 @@ function formatWalletConnectDialogError(
 }
 
 export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
+  useShadowRoot = false,
+  ...props
+}: WalletConnectDialogProps<TWallet>): ReactNode {
+  if (useShadowRoot) return <ShadowRootWalletConnectDialog {...props} />
+  return <WalletConnectDialogContent {...props} />
+}
+
+function ShadowRootWalletConnectDialog<TWallet extends WalletConnectDialogWallet>(
+  props: Omit<WalletConnectDialogProps<TWallet>, 'useShadowRoot'>,
+): ReactNode {
+  const hostRef = useRef<HTMLSpanElement | null>(null)
+  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
+    setShadowRoot(host.shadowRoot ?? host.attachShadow({ mode: 'open' }))
+  }, [])
+
+  return (
+    <span ref={hostRef}>
+      {shadowRoot
+        ? createPortal(
+            <>
+              <style>{WALLETCONNECT_DIALOG_CSS}</style>
+              <WalletConnectDialogContent {...props} />
+            </>,
+            shadowRoot,
+          )
+        : null}
+    </span>
+  )
+}
+
+function WalletConnectDialogContent<TWallet extends WalletConnectDialogWallet>({
   open,
   copy,
   projectId,
@@ -102,13 +143,15 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   themeColor,
   copied,
   paymentPending = false,
+  connectionRefreshAvailable = false,
   renderWalletIcon,
   onSelectWallet,
   onRetryPayment,
+  onRefreshConnection,
   onBack,
   onClose,
   onCopyUri,
-}: WalletConnectDialogProps<TWallet>): ReactNode {
+}: Omit<WalletConnectDialogProps<TWallet>, 'useShadowRoot'>): ReactNode {
   if (!open) return null
 
   const appLink = selectedWallet?.links?.native ?? selectedWallet?.links?.universal ?? null
@@ -121,8 +164,12 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
       : appLink && readyUri
         ? walletLink(appLink, readyUri)
         : undefined
+  const showRefreshControl = connectionRefreshAvailable && Boolean(onRefreshConnection)
+  const visibleQrCode = showRefreshControl ? null : qrCode
   const qrLoading =
-    selectedWallet && !qrCode && (state.status === 'connecting' || state.status === 'uri_ready')
+    selectedWallet &&
+    !visibleQrCode &&
+    (state.status === 'connecting' || state.status === 'uri_ready')
   const paymentReady =
     Boolean(selectedWallet) && state.status === 'connected' && Boolean(onRetryPayment)
   const disabledList = (!walletLinkMode && !projectId) || !available
@@ -171,9 +218,9 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
         {selectedWallet ? (
           <div className="stableops-wc-body">
             <div className={walletConnectDialogClassNames.qrFrame}>
-              {qrCode ? (
+              {visibleQrCode ? (
                 <>
-                  <img src={qrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
+                  <img src={visibleQrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
                   <div className="stableops-wc-centered-overlay">
                     <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
                   </div>
@@ -202,9 +249,21 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     aria-hidden="true"
                   />
                   <div className="stableops-wc-centered-overlay">
-                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                    {showRefreshControl ? (
+                      <button
+                        type="button"
+                        className="stableops-wc-refresh-button"
+                        onClick={() => {
+                          if (onRefreshConnection) onRefreshConnection()
+                        }}>
+                        <RotateCw className="stableops-wc-refresh-icon" />
+                        {copy.refreshConnection}
+                      </button>
+                    ) : (
+                      <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                    )}
                   </div>
-                  {state.status === 'failed' ? (
+                  {state.status === 'failed' && !showRefreshControl ? (
                     <div className="stableops-wc-loading-overlay">
                       <CircleAlert className="stableops-wc-error-icon" aria-hidden="true" />
                     </div>

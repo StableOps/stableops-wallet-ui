@@ -230,6 +230,35 @@
   outline: 1px solid rgb(0 0 0 / 5%);
 }
 
+.stableops-wc-refresh-button {
+  display: inline-flex;
+  min-width: 6.5rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border: 1px solid rgb(0 0 0 / 8%);
+  border-radius: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background: #ffffff;
+  color: var(--stableops-wc-text);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 10%),
+    0 2px 4px -2px rgb(0 0 0 / 10%);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.stableops-wc-refresh-button:hover {
+  background: var(--stableops-wc-hover);
+}
+
+.stableops-wc-refresh-icon {
+  width: 1rem;
+  height: 1rem;
+  color: var(--stableops-wc-brand);
+}
+
 .stableops-wc-wallet-logo,
 .stableops-wc-wallet-fallback {
   display: flex;
@@ -245,6 +274,13 @@
 
 .stableops-wc-wallet-logo {
   object-fit: cover;
+}
+
+.stableops-wc-wallet-chip .stableops-wc-wallet-logo,
+.stableops-wc-wallet-chip .stableops-wc-wallet-fallback {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.375rem;
 }
 
 .stableops-wc-wallet-fallback {
