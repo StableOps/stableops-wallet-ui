@@ -32,7 +32,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
     openWallet: '打开 {wallet}',
     paymentPrompt:
       '已连接 {wallet}，请在钱包 App 内确认交易；如果没有弹出支付界面，可再次触发支付。',
-    retryPayment: '再次打开 {wallet} 支付',
+    retryPayment: '再次打开支付',
     retryingPayment: '正在打开支付…',
     refreshConnection: '刷新二维码',
     copyUri: '复制链接',
@@ -65,7 +65,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
     openWallet: 'Open {wallet}',
     paymentPrompt:
       '{wallet} is connected. Confirm the transaction in your wallet app; if no payment screen appears, trigger payment again.',
-    retryPayment: 'Trigger {wallet} payment again',
+    retryPayment: 'Trigger payment again',
     retryingPayment: 'Opening payment…',
     refreshConnection: 'Refresh QR',
     copyUri: 'Copy link',
@@ -75,7 +75,8 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
     errors: {
       dependencyMissing:
         'WalletConnect is not loaded in this environment. Refresh the page and try again.',
-      projectIdMissing: 'WalletConnect projectId is not configured, so mobile wallet pay cannot open.',
+      projectIdMissing:
+        'WalletConnect projectId is not configured, so mobile wallet pay cannot open.',
       initFailed: 'WalletConnect failed to initialize. Check your connection and retry.',
       connectFailed: 'WalletConnect failed to connect. Go back to the wallet list and retry.',
       noAuthorizedChains:
@@ -96,10 +97,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
   },
 }
 
-export function createWalletConnectDialogCopy(
-  locale: WalletConnectLocale,
-  copiedLabel?: string,
-) {
+export function createWalletConnectDialogCopy(locale: WalletConnectLocale, copiedLabel?: string) {
   const t = copy[locale]
   const errors = t.errors
   return {
@@ -121,19 +119,32 @@ export function createWalletConnectDialogCopy(
     connectFailed: t.connectFailed,
     errorMessage: (code: string) => {
       switch (code) {
-        case 'walletconnect_dependency_missing': return errors.dependencyMissing
-        case 'walletconnect_project_id_missing': return errors.projectIdMissing
-        case 'walletconnect_init_failed': return errors.initFailed
-        case 'walletconnect_connect_failed': return errors.connectFailed
-        case 'walletconnect_no_authorized_chains': return errors.noAuthorizedChains
-        case 'walletconnect_tron_unsupported': return errors.tronUnsupported
-        case 'wallet_provider_mismatch': return errors.providerMismatch
-        case 'wallet_provider_not_found': return errors.providerNotFound
-        case 'wallet_tx_reverted': return errors.txReverted
-        case 'token_contract_not_found': return errors.tokenContractNotFound
-        case 'payment_instruction_not_found': return errors.paymentInstructionNotFound
-        case 'unsupported_chain': return errors.unsupportedChain
-        default: return null
+        case 'walletconnect_dependency_missing':
+          return errors.dependencyMissing
+        case 'walletconnect_project_id_missing':
+          return errors.projectIdMissing
+        case 'walletconnect_init_failed':
+          return errors.initFailed
+        case 'walletconnect_connect_failed':
+          return errors.connectFailed
+        case 'walletconnect_no_authorized_chains':
+          return errors.noAuthorizedChains
+        case 'walletconnect_tron_unsupported':
+          return errors.tronUnsupported
+        case 'wallet_provider_mismatch':
+          return errors.providerMismatch
+        case 'wallet_provider_not_found':
+          return errors.providerNotFound
+        case 'wallet_tx_reverted':
+          return errors.txReverted
+        case 'token_contract_not_found':
+          return errors.tokenContractNotFound
+        case 'payment_instruction_not_found':
+          return errors.paymentInstructionNotFound
+        case 'unsupported_chain':
+          return errors.unsupportedChain
+        default:
+          return null
       }
     },
   }
