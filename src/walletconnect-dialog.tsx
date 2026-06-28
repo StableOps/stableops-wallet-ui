@@ -317,7 +317,9 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                   ) : (
                     <ExternalLink className="stableops-wc-action-icon" />
                   )}
-                  {paymentPending ? copy.retryingPayment : copy.retryPayment(selectedWallet.name)}
+                  <span className="stableops-wc-action-label">
+                    {paymentPending ? copy.retryingPayment : copy.retryPayment(selectedWallet.name)}
+                  </span>
                 </button>
               ) : null}
               {!paymentReady && (walletLinkMode || appLink) ? (
@@ -331,7 +333,9 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     ? { target: '_blank', rel: 'noreferrer' }
                     : {})}>
                   <ExternalLink className="stableops-wc-action-icon" />
-                  {copy.openWallet(selectedWallet.name)}
+                  <span className="stableops-wc-action-label">
+                    {copy.openWallet(selectedWallet.name)}
+                  </span>
                 </a>
               ) : null}
               <button
@@ -349,12 +353,12 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                       className="stableops-wc-action-icon stableops-wc-check-icon"
                       strokeWidth={3}
                     />
-                    {copy.copied}
+                    <span className="stableops-wc-action-label">{copy.copied}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="stableops-wc-action-icon" />
-                    {copy.copyUri}
+                    <span className="stableops-wc-action-label">{copy.copyUri}</span>
                   </>
                 )}
               </button>

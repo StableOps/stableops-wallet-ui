@@ -237,6 +237,7 @@
 
 .stableops-wc-icon,
 .stableops-wc-action-icon {
+  flex-shrink: 0;
   width: 1rem;
   height: 1rem;
 }
@@ -454,9 +455,10 @@
 
 .stableops-wc-primary-action,
 .stableops-wc-secondary-action {
-  display: inline-flex;
-  min-height: 2.5rem;
+  display: flex;
   flex: 1;
+  min-width: 0;
+  min-height: 2.5rem;
   cursor: pointer;
   align-items: center;
   justify-content: center;
@@ -469,8 +471,13 @@
   line-height: 1.25;
   text-decoration: none;
   overflow: hidden;
+}
+
+.stableops-wc-action-label {
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .stableops-wc-primary-action {
