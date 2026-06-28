@@ -298,27 +298,23 @@
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
-  border: 1px solid rgb(0 0 0 / 8%);
+  border: 1px solid rgb(0 0 0 / 4%);
   border-radius: 0.75rem;
   padding: 0.625rem 0.75rem;
-  background: #ffffff;
-  color: var(--stableops-wc-text);
+  background: #f9fafb;
+  color: #030712;
   box-shadow:
     0 4px 6px -1px rgb(0 0 0 / 10%),
     0 2px 4px -2px rgb(0 0 0 / 10%);
   font-size: 0.8125rem;
-  font-weight: 600;
   line-height: 1.25;
-}
-
-.stableops-wc-refresh-button:hover {
-  background: var(--stableops-wc-hover);
+  font-weight: 500;
 }
 
 .stableops-wc-refresh-icon {
   width: 1rem;
   height: 1rem;
-  color: var(--stableops-wc-brand);
+  color: #030712;
 }
 
 .stableops-wc-wallet-logo,

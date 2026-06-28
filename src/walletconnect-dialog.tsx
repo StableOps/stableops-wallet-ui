@@ -1,10 +1,22 @@
 import { type CSSProperties, type ReactNode } from 'react'
 
 import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
-import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, RotateCw, X } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  CircleAlert,
+  Copy,
+  ExternalLink,
+  Loader2,
+  RotateCw,
+  X,
+} from 'lucide-react'
 
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
-import { createWalletConnectDialogCopy, type WalletConnectLocale } from './walletconnect-dialog-copy'
+import {
+  createWalletConnectDialogCopy,
+  type WalletConnectLocale,
+} from './walletconnect-dialog-copy'
 import './walletconnect-dialog.css'
 
 const PLACEHOLDER_QR_CODE =
@@ -215,7 +227,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     className="stableops-wc-qr-image stableops-wc-qr-placeholder"
                     aria-hidden="true"
                   />
-                  <div className="stableops-wc-centered-overlay">
+                  <div className="stableops-wc-loading-overlay">
                     {showRefreshControl ? (
                       <button
                         type="button"

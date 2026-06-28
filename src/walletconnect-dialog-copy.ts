@@ -43,7 +43,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
       dependencyMissing: '当前环境未加载 WalletConnect 依赖，请刷新后重试。',
       projectIdMissing: '未配置 WalletConnect projectId，无法打开手机钱包支付。',
       initFailed: 'WalletConnect 初始化失败，请检查网络后重试。',
-      connectFailed: 'WalletConnect 连接失败，请返回钱包列表后重试。',
+      connectFailed: '连接超时，请刷新二维码再重试',
       noAuthorizedChains: '钱包没有授权订单需要的网络，请返回重连并勾选对应网络。',
       tronUnsupported: 'WalletConnect 暂不支持 TRON 支付，请改用支持的手机钱包 App 或手动转账。',
       providerMismatch: '钱包返回的网络和订单网络不一致，请切换到正确网络后重试。',
