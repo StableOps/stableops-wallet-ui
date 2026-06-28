@@ -28,6 +28,29 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
     expect(walletConnectDialogClassNames.backdrop).toContain('stableops-wc-backdrop')
   })
 
+  it('matches dashboard dialog colors while allowing host design tokens to override them', () => {
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(css).toContain('--stableops-wc-backdrop: rgb(0 0 0 / 80%)')
+    expect(css).toContain('--stableops-wc-surface: var(--background, oklch(1 0 0))')
+    expect(css).toContain('--stableops-wc-text: var(--foreground, oklch(0.141 0.005 285.823))')
+    expect(css).toContain('--stableops-wc-muted: var(--muted-foreground, oklch(0.552 0.016 285.938))')
+    expect(css).toContain('--stableops-wc-border: var(--border, oklch(0.92 0.004 286.32))')
+    expect(css).toContain('--stableops-wc-hover: var(--accent, #e8faf7)')
+    expect(css).toContain('--stableops-wc-brand: var(--primary, #12233a)')
+    expect(css).toContain('0 10px 15px -3px rgb(0 0 0 / 10%)')
+  })
+
+  it('isolates dialog internals from host prose typography styles', () => {
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(css).toContain('.stableops-wc-sheet,')
+    expect(css).toContain('.stableops-wc-sheet *')
+    expect(css).toContain('.stableops-wc-sheet :where(button, a, p, img)')
+    expect(css).toContain('text-decoration: none')
+    expect(css).toContain('max-width: 100%')
+  })
+
   it('uses controlled copy state supplied by the host app', () => {
     const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
 
@@ -36,6 +59,40 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
     expect(source).toContain('stableops-wc-copy-done')
     expect(source).not.toContain('navigator.clipboard')
     expect(source).not.toContain('useState(false)')
+  })
+
+  it('keeps connected wallet sessions actionable until the payment tx hash is returned', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
+
+    expect(source).toContain('paymentPrompt:')
+    expect(source).toContain('retryPayment:')
+    expect(source).toContain('paymentPending?: boolean')
+    expect(source).toContain('onRetryPayment?: () => void')
+    expect(source).toContain("state.status === 'connected'")
+    expect(source).toContain('onRetryPayment()')
+  })
+
+  it('keeps the placeholder QR and wallet logo visible on failures while moving text to the footer error', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(source).toContain('CircleAlert')
+    expect(source).toContain("state.status === 'failed' ? (")
+    expect(source).toContain('stableops-wc-error-icon')
+    expect(source).toContain('const visibleError =')
+    expect(source).not.toContain('stableops-wc-error-text')
+    expect(source).not.toContain('{copy.connectFailed}</span>')
+    expect(css).toContain('.stableops-wc-error-icon')
+  })
+
+  it('formats known error codes with host i18n and keeps unknown details visible', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
+
+    expect(source).toContain('export type WalletConnectDialogError')
+    expect(source).toContain('errorMessage: (code: string) => string | null')
+    expect(source).toContain('function formatWalletConnectDialogError')
+    expect(source).toContain('copy.errorMessage(error.code) ?? error.message')
+    expect(source).toContain('formatWalletConnectDialogError(state.error, copy)')
   })
 
   it('keeps theming to a single theme color', () => {

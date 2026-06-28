@@ -1,7 +1,7 @@
 import { type CSSProperties, type ReactNode } from 'react'
 
 import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
-import { ArrowLeft, Check, Copy, ExternalLink, Loader2, X } from 'lucide-react'
+import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, X } from 'lucide-react'
 
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
 import './walletconnect-dialog.css'
@@ -30,11 +30,22 @@ export type WalletConnectDialogCopy = {
   scanWithWallet: (wallet: string) => string
   scanAnyWallet: string
   openWallet: (wallet: string) => string
+  paymentPrompt: (wallet: string) => string
+  retryPayment: (wallet: string) => string
+  retryingPayment: string
   copyUri: string
   copied: string
   or: string
   connectFailed: string
+  errorMessage: (code: string) => string | null
 }
+
+export type WalletConnectDialogError =
+  | string
+  | {
+      code?: string
+      message: string
+    }
 
 export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> = {
   open: boolean
@@ -45,12 +56,14 @@ export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> 
   selectedWallet: TWallet | null
   state: WalletConnectControllerState
   qrCode: string | null
-  error: string | null
+  error: WalletConnectDialogError | null
   walletLinkMode?: boolean
   themeColor?: string
   copied: boolean
+  paymentPending?: boolean
   renderWalletIcon?: (wallet: TWallet) => ReactNode
   onSelectWallet: (wallet: TWallet) => void
+  onRetryPayment?: () => void
   onBack: () => void
   onClose: () => void
   onCopyUri: (uri: string) => void
@@ -66,6 +79,15 @@ export function walletLink(prefix: string, uri: string): string {
   return `${prefix}${encodeURIComponent(uri)}`
 }
 
+function formatWalletConnectDialogError(
+  error: WalletConnectDialogError,
+  copy: WalletConnectDialogCopy,
+): string {
+  if (typeof error === 'string') return error
+  if (error.code) return copy.errorMessage(error.code) ?? error.message
+  return error.message
+}
+
 export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   open,
   copy,
@@ -79,8 +101,10 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   walletLinkMode = false,
   themeColor,
   copied,
+  paymentPending = false,
   renderWalletIcon,
   onSelectWallet,
+  onRetryPayment,
   onBack,
   onClose,
   onCopyUri,
@@ -99,11 +123,19 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
         : undefined
   const qrLoading =
     selectedWallet && !qrCode && (state.status === 'connecting' || state.status === 'uri_ready')
+  const paymentReady =
+    Boolean(selectedWallet) && state.status === 'connected' && Boolean(onRetryPayment)
   const disabledList = (!walletLinkMode && !projectId) || !available
   const renderIcon = renderWalletIcon ?? ((wallet: TWallet) => <WalletIcon wallet={wallet} />)
   const themeStyle: WalletConnectThemeStyle | undefined = themeColor
     ? { '--stableops-wc-brand': themeColor }
     : undefined
+  const visibleError =
+    error !== null
+      ? formatWalletConnectDialogError(error, copy)
+      : state.status === 'failed'
+        ? formatWalletConnectDialogError(state.error, copy)
+        : null
 
   return (
     <div className={walletConnectDialogClassNames.backdrop} style={themeStyle} onClick={onClose}>
@@ -143,9 +175,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                 <>
                   <img src={qrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
                   <div className="stableops-wc-centered-overlay">
-                    <div className="stableops-wc-wallet-chip">
-                      {renderIcon(selectedWallet)}
-                    </div>
+                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
                   </div>
                 </>
               ) : qrLoading ? (
@@ -157,29 +187,38 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     aria-hidden="true"
                   />
                   <div className="stableops-wc-centered-overlay">
-                    <div className="stableops-wc-wallet-chip">
-                      {renderIcon(selectedWallet)}
-                    </div>
+                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
                   </div>
                   <div className="stableops-wc-loading-overlay">
                     <Loader2 className="stableops-wc-spinner stableops-wc-muted-spinner" />
                   </div>
                 </>
               ) : (
-                <div className="stableops-wc-empty-qr">
+                <>
+                  <img
+                    src={PLACEHOLDER_QR_CODE}
+                    alt=""
+                    className="stableops-wc-qr-image stableops-wc-qr-placeholder"
+                    aria-hidden="true"
+                  />
+                  <div className="stableops-wc-centered-overlay">
+                    <div className="stableops-wc-wallet-chip">{renderIcon(selectedWallet)}</div>
+                  </div>
                   {state.status === 'failed' ? (
-                    <span className="stableops-wc-error-text">{copy.connectFailed}</span>
-                  ) : (
-                    <Loader2 className="stableops-wc-spinner" />
-                  )}
-                </div>
+                    <div className="stableops-wc-loading-overlay">
+                      <CircleAlert className="stableops-wc-error-icon" aria-hidden="true" />
+                    </div>
+                  ) : null}
+                </>
               )}
             </div>
 
             <p className="stableops-wc-help-text">
-              {walletLinkMode || selectedWallet.links
-                ? copy.scanWithWallet(selectedWallet.name)
-                : copy.scanAnyWallet}
+              {paymentReady
+                ? copy.paymentPrompt(selectedWallet.name)
+                : walletLinkMode || selectedWallet.links
+                  ? copy.scanWithWallet(selectedWallet.name)
+                  : copy.scanAnyWallet}
             </p>
 
             {walletLinkMode || appLink ? (
@@ -193,7 +232,22 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
             )}
 
             <div className="stableops-wc-actions">
-              {walletLinkMode || appLink ? (
+              {paymentReady ? (
+                <button
+                  type="button"
+                  className="stableops-wc-primary-action stableops-wc-button-action"
+                  onClick={() => {
+                    if (onRetryPayment) onRetryPayment()
+                  }}>
+                  {paymentPending ? (
+                    <Loader2 className="stableops-wc-action-icon stableops-wc-spinner" />
+                  ) : (
+                    <ExternalLink className="stableops-wc-action-icon" />
+                  )}
+                  {paymentPending ? copy.retryingPayment : copy.retryPayment(selectedWallet.name)}
+                </button>
+              ) : null}
+              {!paymentReady && (walletLinkMode || appLink) ? (
                 <a
                   className={`stableops-wc-primary-action ${
                     walletHref ? '' : 'stableops-wc-disabled-link'
@@ -249,11 +303,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
           </div>
         )}
 
-        {error || state.status === 'failed' ? (
-          <div className="stableops-wc-error-box">
-            {error || (state.status === 'failed' ? state.error.message : undefined)}
-          </div>
-        ) : null}
+        {visibleError ? <div className="stableops-wc-error-box">{visibleError}</div> : null}
       </div>
     </div>
   )

@@ -3,6 +3,7 @@ export {
   walletConnectDialogClassNames,
   walletLink,
   type WalletConnectDialogCopy,
+  type WalletConnectDialogError,
   type WalletConnectDialogProps,
   type WalletConnectDialogWallet,
 } from './walletconnect-dialog'

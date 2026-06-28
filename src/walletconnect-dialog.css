@@ -1,40 +1,46 @@
-/* 语义色 token：亮色在 :root 定义，暗色在下方 prefers-color-scheme 媒体查询里
-   覆盖同名变量，随系统自动切换。主题色只有 --stableops-wc-brand 一个，可被
-   themeColor prop 内联覆盖；强调态颜色一律对 brand 做 color-mix 现算，混合目标
-   由 --stableops-wc-shade 控制（亮色掺黑、暗色掺白），不再额外引入 brand token。 */
+/* 语义色 token：优先读取 dashboard/shadcn 的 CSS 变量；未接入这些变量的宿主使用
+   dashboard 当前 light/dark 默认值作为 fallback。主题色只有 --stableops-wc-brand
+   一个，可被 themeColor prop 内联覆盖。 */
 :root {
-  --stableops-wc-backdrop: rgb(0 0 0 / 45%);
-  --stableops-wc-surface: #ffffff;
-  --stableops-wc-text: #0f1c2e;
-  --stableops-wc-muted: rgb(15 28 46 / 55%);
-  --stableops-wc-border: rgb(15 28 46 / 10%);
-  --stableops-wc-strong-border: rgb(15 28 46 / 15%);
-  --stableops-wc-subtle: rgb(15 28 46 / 3%);
-  --stableops-wc-hover: rgb(15 28 46 / 5%);
+  --stableops-wc-backdrop: rgb(0 0 0 / 80%);
+  --stableops-wc-surface: var(--background, oklch(1 0 0));
+  --stableops-wc-text: var(--foreground, oklch(0.141 0.005 285.823));
+  --stableops-wc-muted: var(--muted-foreground, oklch(0.552 0.016 285.938));
+  --stableops-wc-border: var(--border, oklch(0.92 0.004 286.32));
+  --stableops-wc-strong-border: var(--input, oklch(0.92 0.004 286.32));
+  --stableops-wc-subtle: var(--muted, oklch(0.967 0.001 286.375));
+  --stableops-wc-hover: var(--accent, #e8faf7);
+  --stableops-wc-hover-text: var(--accent-foreground, #0f766e);
   --stableops-wc-shade: #000000;
-  --stableops-wc-brand: #14b8a6;
-  --stableops-wc-copy-done-bg: color-mix(in srgb, var(--stableops-wc-brand) 8%, var(--stableops-wc-surface));
-  --stableops-wc-danger: #e11d48;
-  --stableops-wc-danger-border: rgb(225 29 72 / 25%);
-  --stableops-wc-danger-bg: rgb(225 29 72 / 8%);
+  --stableops-wc-brand: var(--primary, #12233a);
+  --stableops-wc-brand-text: var(--primary-foreground, oklch(0.985 0 0));
+  --stableops-wc-copy-done-bg: var(--accent, #e8faf7);
+  --stableops-wc-danger: var(--destructive, oklch(0.577 0.245 27.325));
+  --stableops-wc-danger-text: var(--destructive-foreground, oklch(0.985 0 0));
+  --stableops-wc-danger-border: color-mix(in oklab, var(--stableops-wc-danger) 25%, transparent);
+  --stableops-wc-danger-bg: color-mix(
+    in oklab,
+    var(--stableops-wc-danger) 8%,
+    var(--stableops-wc-surface)
+  );
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --stableops-wc-backdrop: rgb(0 0 0 / 60%);
-    --stableops-wc-surface: #111c2e;
-    --stableops-wc-text: #e6edf6;
-    --stableops-wc-muted: rgb(230 237 246 / 55%);
-    --stableops-wc-border: rgb(230 237 246 / 12%);
-    --stableops-wc-strong-border: rgb(230 237 246 / 18%);
-    --stableops-wc-subtle: rgb(230 237 246 / 5%);
-    --stableops-wc-hover: rgb(230 237 246 / 8%);
+    --stableops-wc-surface: var(--background, oklch(0.141 0.005 285.823));
+    --stableops-wc-text: var(--foreground, oklch(0.985 0 0));
+    --stableops-wc-muted: var(--muted-foreground, oklch(0.705 0.015 286.067));
+    --stableops-wc-border: var(--border, oklch(1 0 0 / 10%));
+    --stableops-wc-strong-border: var(--input, oklch(1 0 0 / 15%));
+    --stableops-wc-subtle: var(--muted, oklch(0.274 0.006 286.033));
+    --stableops-wc-hover: var(--accent, oklch(0.274 0.006 286.033));
+    --stableops-wc-hover-text: var(--accent-foreground, oklch(0.985 0 0));
     --stableops-wc-shade: #ffffff;
-    --stableops-wc-brand: #2dd4bf;
-    --stableops-wc-copy-done-bg: color-mix(in srgb, var(--stableops-wc-brand) 14%, var(--stableops-wc-surface));
-    --stableops-wc-danger: #fb7185;
-    --stableops-wc-danger-border: rgb(251 113 133 / 30%);
-    --stableops-wc-danger-bg: rgb(251 113 133 / 10%);
+    --stableops-wc-brand: var(--primary, oklch(0.92 0.004 286.32));
+    --stableops-wc-brand-text: var(--primary-foreground, oklch(0.21 0.006 285.885));
+    --stableops-wc-copy-done-bg: var(--accent, oklch(0.274 0.006 286.033));
+    --stableops-wc-danger: var(--destructive, oklch(0.704 0.191 22.216));
+    --stableops-wc-danger-text: var(--destructive-foreground, oklch(0.985 0 0));
   }
 }
 
@@ -95,8 +101,28 @@
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   background: var(--stableops-wc-surface);
   color: var(--stableops-wc-text);
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 25%);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 10%),
+    0 4px 6px -4px rgb(0 0 0 / 10%);
   animation: stableops-walletconnect-sheet-in 220ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.stableops-wc-sheet,
+.stableops-wc-sheet * {
+  box-sizing: border-box;
+}
+
+.stableops-wc-sheet :where(button, a, p, img) {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+}
+
+.stableops-wc-sheet :where(img) {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 .stableops-wc-header {
@@ -158,7 +184,7 @@
 .stableops-wc-qr-frame {
   position: relative;
   width: 100%;
-  max-width: 15rem;
+  max-width: 12rem;
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   border: 1px solid rgb(15 28 46 / 8%);
@@ -169,6 +195,8 @@
 }
 
 .stableops-wc-qr-image {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -255,7 +283,9 @@
   color: #9ca3af;
 }
 
-.stableops-wc-error-text {
+.stableops-wc-error-icon {
+  width: 1.75rem;
+  height: 1.75rem;
   color: var(--stableops-wc-danger);
 }
 
@@ -306,13 +336,22 @@
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stableops-wc-primary-action {
   border: 1px solid transparent;
   background: var(--stableops-wc-brand);
-  color: #ffffff;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  color: var(--stableops-wc-brand-text);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 10%),
+    0 1px 2px -1px rgb(0 0 0 / 10%);
+}
+
+.stableops-wc-button-action {
+  font: inherit;
 }
 
 .stableops-wc-primary-action:hover {
@@ -326,7 +365,8 @@
 }
 
 .stableops-wc-secondary-action:hover {
-  background: var(--stableops-wc-subtle);
+  background: var(--stableops-wc-hover);
+  color: var(--stableops-wc-hover-text);
 }
 
 .stableops-wc-secondary-action:disabled,
@@ -370,7 +410,8 @@
 
 .stableops-wc-wallet-button:hover {
   border-color: color-mix(in srgb, var(--stableops-wc-brand) 40%, transparent);
-  background: var(--stableops-wc-subtle);
+  background: var(--stableops-wc-hover);
+  color: var(--stableops-wc-hover-text);
 }
 
 .stableops-wc-wallet-button:disabled {
