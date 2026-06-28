@@ -1,10 +1,8 @@
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
+import { type CSSProperties, type ReactNode } from 'react'
 
 import type { WalletConnectControllerState } from '@stableops/wallet-sdk'
 import { ArrowLeft, Check, CircleAlert, Copy, ExternalLink, Loader2, RotateCw, X } from 'lucide-react'
 
-import { WALLETCONNECT_DIALOG_CSS } from './walletconnect-dialog-css'
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
 import './walletconnect-dialog.css'
 
@@ -61,7 +59,6 @@ export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> 
   qrCode: string | null
   error: WalletConnectDialogError | null
   walletLinkMode?: boolean
-  useShadowRoot?: boolean
   themeColor?: string
   copied: boolean
   paymentPending?: boolean
@@ -95,41 +92,6 @@ function formatWalletConnectDialogError(
 }
 
 export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
-  useShadowRoot = false,
-  ...props
-}: WalletConnectDialogProps<TWallet>): ReactNode {
-  if (useShadowRoot) return <ShadowRootWalletConnectDialog {...props} />
-  return <WalletConnectDialogContent {...props} />
-}
-
-function ShadowRootWalletConnectDialog<TWallet extends WalletConnectDialogWallet>(
-  props: Omit<WalletConnectDialogProps<TWallet>, 'useShadowRoot'>,
-): ReactNode {
-  const hostRef = useRef<HTMLSpanElement | null>(null)
-  const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null)
-
-  useEffect(() => {
-    const host = hostRef.current
-    if (!host) return
-    setShadowRoot(host.shadowRoot ?? host.attachShadow({ mode: 'open' }))
-  }, [])
-
-  return (
-    <span ref={hostRef}>
-      {shadowRoot
-        ? createPortal(
-            <>
-              <style>{WALLETCONNECT_DIALOG_CSS}</style>
-              <WalletConnectDialogContent {...props} />
-            </>,
-            shadowRoot,
-          )
-        : null}
-    </span>
-  )
-}
-
-function WalletConnectDialogContent<TWallet extends WalletConnectDialogWallet>({
   open,
   copy,
   projectId,
@@ -151,7 +113,7 @@ function WalletConnectDialogContent<TWallet extends WalletConnectDialogWallet>({
   onBack,
   onClose,
   onCopyUri,
-}: Omit<WalletConnectDialogProps<TWallet>, 'useShadowRoot'>): ReactNode {
+}: WalletConnectDialogProps<TWallet>): ReactNode {
   if (!open) return null
 
   const appLink = selectedWallet?.links?.native ?? selectedWallet?.links?.universal ?? null

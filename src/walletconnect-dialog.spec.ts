@@ -46,20 +46,50 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
 
     expect(css).toContain('.stableops-wc-sheet,')
     expect(css).toContain('.stableops-wc-sheet *')
-    expect(css).toContain('.stableops-wc-sheet :where(button, a, p, img)')
+    expect(css).toContain('.stableops-wc-sheet :where(button, a, p, span, img)')
     expect(css).toContain('text-decoration: none')
     expect(css).toContain('max-width: 100%')
   })
 
-  it('can render inside a shadow root with its own dialog stylesheet', () => {
+  it('resets inherited prose typography properties inside the dialog', () => {
+    const css = readFileSync(resolve(__dirname, 'walletconnect-dialog.css'), 'utf8')
+
+    expect(css).toContain('font-family:')
+    expect(css).toContain('font-size: 14px')
+    expect(css).toContain('font-style: normal')
+    expect(css).toContain('font-weight: 400')
+    expect(css).toContain('font-stretch: normal')
+    expect(css).toContain('font-feature-settings: normal')
+    expect(css).toContain('font-kerning: auto')
+    expect(css).toContain('font-language-override: normal')
+    expect(css).toContain('font-optical-sizing: auto')
+    expect(css).toContain('font-size-adjust: none')
+    expect(css).toContain('font-variant-alternates: normal')
+    expect(css).toContain('font-variant-caps: normal')
+    expect(css).toContain('font-variant-east-asian: normal')
+    expect(css).toContain('font-variant-emoji: normal')
+    expect(css).toContain('font-variant-ligatures: normal')
+    expect(css).toContain('font-variant-numeric: normal')
+    expect(css).toContain('font-variant-position: normal')
+    expect(css).toContain('font-variation-settings: normal')
+    expect(css).toContain('letter-spacing: 0')
+    expect(css).toContain('line-height: 1.4')
+    expect(css).toContain('text-transform: none')
+    expect(css).toContain('word-spacing: normal')
+    expect(css).toContain('.stableops-wc-sheet :where(button, a, p, span, img)')
+    expect(css).toContain('line-height: inherit')
+    expect(css).toContain('.stableops-wc-primary-action')
+    expect(css).toContain('line-height: 1.25')
+  })
+
+  it('keeps the dialog CSS-based instead of mounting a shadow root', () => {
     const source = readFileSync(resolve(__dirname, 'walletconnect-dialog.tsx'), 'utf8')
 
-    expect(source).toContain("import { createPortal } from 'react-dom'")
-    expect(source).toContain('WALLETCONNECT_DIALOG_CSS')
-    expect(source).toContain('useShadowRoot?: boolean')
-    expect(source).toContain("host.attachShadow({ mode: 'open' })")
-    expect(source).toContain('<style>{WALLETCONNECT_DIALOG_CSS}</style>')
-    expect(source).toContain('createPortal')
+    expect(source).not.toContain("import { createPortal } from 'react-dom'")
+    expect(source).not.toContain('WALLETCONNECT_DIALOG_CSS')
+    expect(source).not.toContain('useShadowRoot')
+    expect(source).not.toContain('attachShadow')
+    expect(source).not.toContain('createPortal')
   })
 
   it('uses controlled copy state supplied by the host app', () => {
