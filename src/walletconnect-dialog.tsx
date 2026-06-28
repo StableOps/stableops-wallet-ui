@@ -197,24 +197,29 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
         {selectedWallet ? (
           <div className="stableops-wc-body">
             <div className={walletConnectDialogClassNames.qrFrame}>
-              {visibleQrCode ? (
-                <>
-                  <img src={visibleQrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
-                  <div className="stableops-wc-centered-overlay">
+                {visibleQrCode ? (
+                  <>
+                    <img src={visibleQrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
                     <div
-                      className={`stableops-wc-wallet-chip${
-                        paymentReady ? ' stableops-wc-wallet-chip-connected' : ''
-                      }`}>
-                      {renderIcon(selectedWallet)}
-                      {paymentReady ? (
-                        <span className="stableops-wc-connected-badge" aria-hidden="true">
-                          <Check className="stableops-wc-connected-badge-icon" strokeWidth={3} />
-                        </span>
-                      ) : null}
+                      className={
+                        paymentReady
+                          ? 'stableops-wc-loading-overlay'
+                          : 'stableops-wc-centered-overlay'
+                      }>
+                      <div
+                        className={`stableops-wc-wallet-chip${
+                          paymentReady ? ' stableops-wc-wallet-chip-connected' : ''
+                        }`}>
+                        {renderIcon(selectedWallet)}
+                        {paymentReady ? (
+                          <span className="stableops-wc-connected-badge" aria-hidden="true">
+                            <Check className="stableops-wc-connected-badge-icon" strokeWidth={3} />
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </>
-              ) : qrLoading ? (
+                  </>
+                ) : qrLoading ? (
                 <>
                   <img
                     src={PLACEHOLDER_QR_CODE}
