@@ -1,12 +1,42 @@
+/* 语义色 token：亮色在 :root 定义，暗色在下方 prefers-color-scheme 媒体查询里
+   覆盖同名变量，随系统自动切换。brand 可被 themeColor prop 通过内联 style 覆盖，
+   brand-strong / brand-hover 由 brand 派生，因此也会跟随自定义主题色。 */
 :root {
   --stableops-wc-backdrop: rgb(0 0 0 / 45%);
   --stableops-wc-surface: #ffffff;
   --stableops-wc-text: #0f1c2e;
   --stableops-wc-muted: rgb(15 28 46 / 55%);
   --stableops-wc-border: rgb(15 28 46 / 10%);
+  --stableops-wc-strong-border: rgb(15 28 46 / 15%);
   --stableops-wc-subtle: rgb(15 28 46 / 3%);
+  --stableops-wc-hover: rgb(15 28 46 / 5%);
   --stableops-wc-brand: #14b8a6;
+  --stableops-wc-brand-strong: color-mix(in srgb, var(--stableops-wc-brand) 82%, #000000);
+  --stableops-wc-brand-hover: color-mix(in srgb, var(--stableops-wc-brand) 82%, #000000);
+  --stableops-wc-copy-done-bg: color-mix(in srgb, var(--stableops-wc-brand) 8%, var(--stableops-wc-surface));
   --stableops-wc-danger: #e11d48;
+  --stableops-wc-danger-border: rgb(225 29 72 / 25%);
+  --stableops-wc-danger-bg: rgb(225 29 72 / 8%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --stableops-wc-backdrop: rgb(0 0 0 / 60%);
+    --stableops-wc-surface: #111c2e;
+    --stableops-wc-text: #e6edf6;
+    --stableops-wc-muted: rgb(230 237 246 / 55%);
+    --stableops-wc-border: rgb(230 237 246 / 12%);
+    --stableops-wc-strong-border: rgb(230 237 246 / 18%);
+    --stableops-wc-subtle: rgb(230 237 246 / 5%);
+    --stableops-wc-hover: rgb(230 237 246 / 8%);
+    --stableops-wc-brand: #2dd4bf;
+    --stableops-wc-brand-strong: color-mix(in srgb, var(--stableops-wc-brand) 80%, #ffffff);
+    --stableops-wc-brand-hover: color-mix(in srgb, var(--stableops-wc-brand) 88%, #ffffff);
+    --stableops-wc-copy-done-bg: color-mix(in srgb, var(--stableops-wc-brand) 14%, var(--stableops-wc-surface));
+    --stableops-wc-danger: #fb7185;
+    --stableops-wc-danger-border: rgb(251 113 133 / 30%);
+    --stableops-wc-danger-bg: rgb(251 113 133 / 10%);
+  }
 }
 
 @keyframes stableops-walletconnect-backdrop-in {
@@ -104,7 +134,7 @@
 }
 
 .stableops-wc-icon-button:hover {
-  background: rgb(15 28 46 / 5%);
+  background: var(--stableops-wc-hover);
   color: var(--stableops-wc-text);
 }
 
@@ -243,13 +273,13 @@
   gap: 0.75rem;
   margin: 1rem 0;
   font-size: 0.75rem;
-  color: rgb(15 28 46 / 45%);
+  color: var(--stableops-wc-muted);
 }
 
 .stableops-wc-line {
   height: 1px;
   flex: 1;
-  background: rgb(15 28 46 / 10%);
+  background: var(--stableops-wc-border);
 }
 
 .stableops-wc-spacer {
@@ -287,11 +317,11 @@
 }
 
 .stableops-wc-primary-action:hover {
-  background: color-mix(in srgb, var(--stableops-wc-brand) 82%, #000000);
+  background: var(--stableops-wc-brand-hover);
 }
 
 .stableops-wc-secondary-action {
-  border: 1px solid rgb(15 28 46 / 15%);
+  border: 1px solid var(--stableops-wc-strong-border);
   background: var(--stableops-wc-surface);
   color: var(--stableops-wc-text);
 }
@@ -308,13 +338,13 @@
 }
 
 .stableops-wc-check-icon {
-  color: color-mix(in srgb, var(--stableops-wc-brand) 82%, #000000);
+  color: var(--stableops-wc-brand-strong);
 }
 
 .stableops-wc-copy-done {
   border-color: color-mix(in srgb, var(--stableops-wc-brand) 35%, transparent);
-  background: color-mix(in srgb, var(--stableops-wc-brand) 8%, #ffffff);
-  color: color-mix(in srgb, var(--stableops-wc-brand) 82%, #000000);
+  background: var(--stableops-wc-copy-done-bg);
+  color: var(--stableops-wc-brand-strong);
 }
 
 .stableops-wc-wallet-grid {
@@ -360,9 +390,9 @@
 
 .stableops-wc-error-box {
   margin: 0 1.25rem 1.25rem;
-  border: 1px solid rgb(225 29 72 / 25%);
+  border: 1px solid var(--stableops-wc-danger-border);
   border-radius: 0.5rem;
-  background: rgb(225 29 72 / 8%);
+  background: var(--stableops-wc-danger-bg);
   padding: 0.625rem;
   text-align: center;
   font-size: 0.75rem;
