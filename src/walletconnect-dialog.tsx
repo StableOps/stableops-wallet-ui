@@ -32,6 +32,9 @@ export type WalletConnectDialogWallet = WalletIconWallet & {
     native?: string
     universal?: string
   }
+  // 通用「任意钱包」入口（非某个具体钱包）。仅该入口展示「用任意支持 WalletConnect 的钱包扫码」，
+  // 具体钱包（含仅二维码、无深链的 TronLink / TokenPocket）一律展示「用手机上的 {wallet} 扫码」。
+  anyWallet?: boolean
 }
 
 export type WalletConnectDialogCopy = {
@@ -289,9 +292,9 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
             <p className="stableops-wc-help-text">
               {paymentReady
                 ? copy.paymentPrompt(selectedWallet.name)
-                : walletLinkMode || selectedWallet.links
-                  ? copy.scanWithWallet(selectedWallet.name)
-                  : copy.scanAnyWallet}
+                : selectedWallet.anyWallet
+                  ? copy.scanAnyWallet
+                  : copy.scanWithWallet(selectedWallet.name)}
             </p>
 
             {walletLinkMode || appLink ? (

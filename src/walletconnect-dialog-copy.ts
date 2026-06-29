@@ -28,7 +28,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
     qrAlt: '支付二维码',
     payWith: '用 {wallet} 支付',
     scanWithWallet: '用手机上的 {wallet} 扫码',
-    scanAnyWallet: '用任意手机钱包扫码',
+    scanAnyWallet: '用任意支持 WalletConnect 的钱包扫码',
     openWallet: '打开 {wallet}',
     paymentPrompt:
       '已连接 {wallet}，请在钱包 App 内确认交易；如果没有弹出支付界面，可再次触发支付。',
@@ -45,7 +45,6 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
       initFailed: 'WalletConnect 初始化失败，请检查网络后重试。',
       connectFailed: '连接超时，请刷新二维码再重试',
       noAuthorizedChains: '钱包没有授权订单需要的网络，请返回重连并勾选对应网络。',
-      tronUnsupported: 'WalletConnect 暂不支持 TRON 支付，请改用支持的手机钱包 App 或手动转账。',
       providerMismatch: '钱包返回的网络和订单网络不一致，请切换到正确网络后重试。',
       providerNotFound: '未找到可用于本订单网络的钱包授权，请返回重连并授权网络。',
       txReverted: '链上交易发生回滚，请重新付款或联系商户。',
@@ -61,7 +60,7 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
     qrAlt: 'Payment QR code',
     payWith: 'Pay with {wallet}',
     scanWithWallet: 'Scan with {wallet} on your phone',
-    scanAnyWallet: 'Scan with any mobile wallet',
+    scanAnyWallet: 'Scan with any WalletConnect wallet',
     openWallet: 'Open {wallet}',
     paymentPrompt:
       '{wallet} is connected. Confirm the transaction in your wallet app; if no payment screen appears, trigger payment again.',
@@ -81,8 +80,6 @@ const copy: Record<WalletConnectLocale, CopyMap> = {
       connectFailed: 'WalletConnect failed to connect. Go back to the wallet list and retry.',
       noAuthorizedChains:
         'Your wallet did not authorize the required networks. Reconnect and select the requested network.',
-      tronUnsupported:
-        'WalletConnect does not support TRON payments yet. Use a supported mobile wallet app or manual transfer.',
       providerMismatch:
         'The wallet returned a different network than the order requires. Switch networks and retry.',
       providerNotFound:
