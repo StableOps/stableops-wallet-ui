@@ -10,3 +10,4 @@ export {
 export { createWalletConnectDialogCopy, type WalletConnectLocale } from './walletconnect-dialog-copy'
 export { WALLET_LOGOS } from './wallet-logos'
 export { WalletIcon, type WalletIconWallet } from './wallet-icon'
+export { TokenIcon, type TokenIconProps, type TokenSymbol } from './token-icon'
