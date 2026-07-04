@@ -3,7 +3,12 @@ import { resolve } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { WALLET_LOGOS, walletConnectDialogClassNames, walletLink } from './index'
+import {
+  createWalletConnectDialogMessages,
+  WALLET_LOGOS,
+  walletConnectDialogClassNames,
+  walletLink,
+} from './index'
 
 describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
   it('exports a URL encoder for WalletConnect wallet deep links', () => {
@@ -156,8 +161,39 @@ describe('@stableops/wallet-ui WalletConnectDialog contract', () => {
     expect(source).toContain('export type WalletConnectDialogError')
     expect(source).toContain('errorMessage: (code: string) => string | null')
     expect(source).toContain('function formatWalletConnectDialogError')
-    expect(source).toContain('copy.errorMessage(error.code) ?? error.message')
-    expect(source).toContain('formatWalletConnectDialogError(state.error, copy)')
+    expect(source).toContain('messages.errorMessage(error.code) ?? error.message')
+    expect(source).toContain('formatWalletConnectDialogError(state.error, messages)')
+  })
+
+  it('uses English messages by default and lets hosts override raw message fields', () => {
+    const defaults = createWalletConnectDialogMessages()
+    const custom = createWalletConnectDialogMessages({
+      heading: '外部钱包标题',
+      payWith: '用 {wallet} 付款',
+      errors: {
+        initFailed: '外部初始化失败',
+      },
+    })
+
+    expect(defaults.heading).toBe('Pay with mobile wallet')
+    expect(defaults.errorMessage('walletconnect_init_failed')).toBe(
+      'WalletConnect failed to initialize. Check your connection and retry.',
+    )
+    expect(custom.heading).toBe('外部钱包标题')
+    expect(custom.payWith('MetaMask')).toBe('用 MetaMask 付款')
+    expect(custom.scanAnyWallet).toBe('Scan with any WalletConnect wallet')
+    expect(custom.errorMessage('walletconnect_init_failed')).toBe('外部初始化失败')
+    expect(custom.errorMessage('walletconnect_connect_failed')).toBe(
+      'WalletConnect failed to connect. Go back to the wallet list and retry.',
+    )
+  })
+
+  it('does not keep a built-in Chinese locale path in wallet-ui', () => {
+    const source = readFileSync(resolve(__dirname, 'walletconnect-dialog-messages.ts'), 'utf8')
+
+    expect(source).not.toContain('WalletConnectLocale')
+    expect(source).not.toContain("locale?:")
+    expect(source).not.toContain('用手机钱包支付')
   })
 
   it('keeps theming to a single theme color', () => {

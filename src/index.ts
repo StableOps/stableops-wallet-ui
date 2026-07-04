@@ -2,12 +2,16 @@ export {
   WalletConnectDialog,
   walletConnectDialogClassNames,
   walletLink,
-  type WalletConnectDialogCopy,
   type WalletConnectDialogError,
+  type WalletConnectDialogMessages,
   type WalletConnectDialogProps,
   type WalletConnectDialogWallet,
 } from './walletconnect-dialog'
-export { createWalletConnectDialogCopy, type WalletConnectLocale } from './walletconnect-dialog-copy'
+export {
+  createWalletConnectDialogMessages,
+  type WalletConnectDialogMessageOverrides,
+  type WalletConnectDialogMessagesMap,
+} from './walletconnect-dialog-messages'
 export { WALLET_LOGOS } from './wallet-logos'
 export { WalletIcon, type WalletIconWallet } from './wallet-icon'
 export { TokenIcon, type TokenIconProps, type TokenSymbol } from './token-icon'

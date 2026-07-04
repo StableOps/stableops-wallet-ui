@@ -14,9 +14,9 @@ import {
 
 import { WalletIcon, type WalletIconWallet } from './wallet-icon'
 import {
-  createWalletConnectDialogCopy,
-  type WalletConnectLocale,
-} from './walletconnect-dialog-copy'
+  createWalletConnectDialogMessages,
+  type WalletConnectDialogMessageOverrides,
+} from './walletconnect-dialog-messages'
 import './walletconnect-dialog.css'
 
 const PLACEHOLDER_QR_CODE =
@@ -37,7 +37,7 @@ export type WalletConnectDialogWallet = WalletIconWallet & {
   anyWallet?: boolean
 }
 
-export type WalletConnectDialogCopy = {
+export type WalletConnectDialogMessages = {
   heading: string
   back: string
   close: string
@@ -66,8 +66,8 @@ export type WalletConnectDialogError =
 
 export type WalletConnectDialogProps<TWallet extends WalletConnectDialogWallet> = {
   open: boolean
-  copy?: WalletConnectDialogCopy
-  locale?: WalletConnectLocale
+  messages?: WalletConnectDialogMessages
+  messageOverrides?: WalletConnectDialogMessageOverrides
   projectId: string | null | undefined
   available: boolean
   wallets: readonly TWallet[]
@@ -101,17 +101,17 @@ export function walletLink(prefix: string, uri: string): string {
 
 function formatWalletConnectDialogError(
   error: WalletConnectDialogError,
-  copy: WalletConnectDialogCopy,
+  messages: WalletConnectDialogMessages,
 ): string {
   if (typeof error === 'string') return error
-  if (error.code) return copy.errorMessage(error.code) ?? error.message
+  if (error.code) return messages.errorMessage(error.code) ?? error.message
   return error.message
 }
 
 export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
   open,
-  copy: copyProp,
-  locale = 'en',
+  messages: messagesProp,
+  messageOverrides,
   projectId,
   available,
   wallets,
@@ -134,7 +134,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
 }: WalletConnectDialogProps<TWallet>): ReactNode {
   if (!open) return null
 
-  const copy = copyProp ?? createWalletConnectDialogCopy(locale)
+  const messages = messagesProp ?? createWalletConnectDialogMessages(messageOverrides)
 
   const appLink = selectedWallet?.links?.native ?? selectedWallet?.links?.universal ?? null
   const appLinkIsUniversal =
@@ -161,9 +161,9 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
     : undefined
   const visibleError =
     error !== null
-      ? formatWalletConnectDialogError(error, copy)
+      ? formatWalletConnectDialogError(error, messages)
       : state.status === 'failed'
-        ? formatWalletConnectDialogError(state.error, copy)
+        ? formatWalletConnectDialogError(state.error, messages)
         : null
 
   return (
@@ -178,19 +178,19 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
             <>
               <button
                 type="button"
-                aria-label={copy.back}
+                aria-label={messages.back}
                 onClick={onBack}
                 className="stableops-wc-icon-button stableops-wc-back-button">
                 <ArrowLeft className="stableops-wc-icon" />
               </button>
-              <div className="stableops-wc-title">{copy.payWith(selectedWallet.name)}</div>
+              <div className="stableops-wc-title">{messages.payWith(selectedWallet.name)}</div>
             </>
           ) : (
-            <div className="stableops-wc-title">{copy.heading}</div>
+            <div className="stableops-wc-title">{messages.heading}</div>
           )}
           <button
             type="button"
-            aria-label={copy.close}
+            aria-label={messages.close}
             onClick={onClose}
             className="stableops-wc-icon-button stableops-wc-close-button">
             <X className="stableops-wc-icon" />
@@ -202,7 +202,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
             <div className={walletConnectDialogClassNames.qrFrame}>
                 {visibleQrCode ? (
                   <>
-                    <img src={visibleQrCode} alt={copy.qrAlt} className="stableops-wc-qr-image" />
+                    <img src={visibleQrCode} alt={messages.qrAlt} className="stableops-wc-qr-image" />
                     <div
                       className={
                         paymentReady
@@ -264,7 +264,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                           if (onRefreshConnection) onRefreshConnection()
                         }}>
                         <RotateCw className="stableops-wc-refresh-icon" />
-                        {copy.refreshConnection}
+                        {messages.refreshConnection}
                       </button>
                     ) : (
                       <div
@@ -291,16 +291,16 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
 
             <p className="stableops-wc-help-text">
               {paymentReady
-                ? copy.paymentPrompt(selectedWallet.name)
+                ? messages.paymentPrompt(selectedWallet.name)
                 : selectedWallet.anyWallet
-                  ? copy.scanAnyWallet
-                  : copy.scanWithWallet(selectedWallet.name)}
+                  ? messages.scanAnyWallet
+                  : messages.scanWithWallet(selectedWallet.name)}
             </p>
 
             {walletLinkMode || appLink ? (
               <div className="stableops-wc-separator">
                 <div className="stableops-wc-line" />
-                <span>{copy.or}</span>
+                <span>{messages.or}</span>
                 <div className="stableops-wc-line" />
               </div>
             ) : (
@@ -321,7 +321,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     <ExternalLink className="stableops-wc-action-icon" />
                   )}
                   <span className="stableops-wc-action-label">
-                    {paymentPending ? copy.retryingPayment : copy.retryPayment(selectedWallet.name)}
+                    {paymentPending ? messages.retryingPayment : messages.retryPayment(selectedWallet.name)}
                   </span>
                 </button>
               ) : null}
@@ -337,7 +337,7 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                     : {})}>
                   <ExternalLink className="stableops-wc-action-icon" />
                   <span className="stableops-wc-action-label">
-                    {copy.openWallet(selectedWallet.name)}
+                    {messages.openWallet(selectedWallet.name)}
                   </span>
                 </a>
               ) : null}
@@ -356,12 +356,12 @@ export function WalletConnectDialog<TWallet extends WalletConnectDialogWallet>({
                       className="stableops-wc-action-icon stableops-wc-check-icon"
                       strokeWidth={3}
                     />
-                    <span className="stableops-wc-action-label">{copy.copied}</span>
+                    <span className="stableops-wc-action-label">{messages.copied}</span>
                   </>
                 ) : (
                   <>
                     <Copy className="stableops-wc-action-icon" />
-                    <span className="stableops-wc-action-label">{copy.copyUri}</span>
+                    <span className="stableops-wc-action-label">{messages.copyUri}</span>
                   </>
                 )}
               </button>
