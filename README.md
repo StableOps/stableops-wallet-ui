@@ -4,15 +4,61 @@
 
 [中文文档](./README.zh-CN.md)
 
-StableOps Wallet UI provides the shared React UI components used by StableOps
-checkout surfaces: a WalletConnect payment dialog, wallet logos, and a wallet
-icon renderer. These components are shared between the main checkout flow
-(`apps/checkout`) and the interactive playground (`packages/playground`) so that
-both surfaces render identical wallet selection and QR-code payment experiences.
+StableOps Wallet UI provides React components for wallet payments: a controlled
+WalletConnect dialog, wallet icons and logos, and USDC/USDT token icons. Wallet
+connections and transfers are handled by `@stableops/wallet-sdk`.
 
-This package is intended for applications that already integrate
-`@stableops/wallet-sdk` and need a ready-made responsive dialog for WalletConnect
-flows. It ships no wallet connection logic — that is handled by the SDK.
+## Installation
+
+Requires React and React DOM 18 or newer.
+
+```bash
+pnpm add @stableops/wallet-ui @stableops/wallet-sdk react react-dom
+```
+
+Import the dialog stylesheet once. Importing the JavaScript entry or scanning
+Tailwind classes does not load these styles:
+
+```tsx
+import { WalletConnectDialog, TokenIcon, WalletIcon } from '@stableops/wallet-ui'
+import '@stableops/wallet-ui/walletconnect-dialog.css'
+
+<TokenIcon symbol="USDC" size={24} />
+<WalletIcon wallet={{ name: 'MetaMask', brand: 'metamask' }} />
+```
+
+## Controlled WalletConnect dialog
+
+Pass connection state from `controller.getState()` and `controller.subscribe()`.
+`qrCode` is a QR image data URL generated from the `uri_ready` state's `uri`.
+The host owns wallet selection, opening and closing the dialog, and payment:
+
+```tsx
+import { WalletConnectDialog, type WalletConnectDialogProps } from '@stableops/wallet-ui'
+
+export function MobileWalletDialog(props: WalletConnectDialogProps<{ id: string; name: string }>) {
+  return <WalletConnectDialog {...props} />
+}
+```
+
+| Required props                                     | Purpose                                               |
+| -------------------------------------------------- | ----------------------------------------------------- |
+| `open`, `projectId`, `available`                   | Visibility and connection availability                |
+| `wallets`, `selectedWallet`                        | Wallet list and selection                             |
+| `state`, `qrCode`, `error`, `copied`               | Connection state, QR image, errors, and copy feedback |
+| `onSelectWallet`, `onBack`, `onClose`, `onCopyUri` | Host actions                                          |
+
+Optional props include `themeColor`, `walletLinkMode`, `renderWalletIcon`,
+`paymentPending`, `onRetryPayment`, `connectionRefreshAvailable`, and
+`onRefreshConnection`. Selecting a wallet should call the SDK controller's
+`connect({ walletId })`. A successful connection does not itself submit payment.
+
+`messageOverrides` customizes individual labels and error text.
+`createWalletConnectDialogMessages(overrides)` creates a full message set that can
+also be passed through `messages`. `TokenIcon` accepts `symbol` (`USDC` or `USDT`),
+`size`, `className`, and `style`. `WalletIcon` accepts a wallet name and optional
+`brand`, `iconUrl`, `initials`, or `Glyph`. `WALLET_LOGOS`,
+`walletConnectDialogClassNames`, and `walletLink` are also exported.
 
 ## Documentation
 
